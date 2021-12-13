@@ -1,0 +1,406 @@
+% !TeX program = pdfLaTeX
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx,psfrag,epsf}
+\usepackage{enumerate}
+\usepackage{natbib}
+\usepackage{textcomp}
+\usepackage[hyphens]{url} % not crucial - just used below for the URL
+\usepackage{hyperref}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+%\pdfminorversion=4
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{0}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\oddsidemargin}{-.5in}%
+\addtolength{\evensidemargin}{-.5in}%
+\addtolength{\textwidth}{1in}%
+\addtolength{\textheight}{1.3in}%
+\addtolength{\topmargin}{-.8in}%
+
+%% load any required packages here
+
+
+
+% Pandoc citation processing
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{dcolumn}
+
+\begin{document}
+
+
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\if0\blind
+{
+  \title{\bf Rainfall, Drought Declaration, and Reelection: A
+replication of \citet{cooperman2021natural}}
+
+  \author{
+        Scott Mahon \thanks{The authors gratefully acknowledge the help
+of TFs Soubhik Barari and Chris Kenny, Professor Gary King, and the
+reviewers in the writing of this paper.} \\
+    Harvard College\\
+     and \\     Alexandra Norris \thanks{Replication data can be
+accessed
+\href{https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/P6WM4E}{HERE}} \\
+    Harvard College\\
+      }
+  \maketitle
+} \fi
+
+\if1\blind
+{
+  \bigskip
+  \bigskip
+  \bigskip
+  \begin{center}
+    {\LARGE\bf Rainfall, Drought Declaration, and Reelection: A
+replication of \citet{cooperman2021natural}}
+  \end{center}
+  \medskip
+} \fi
+
+\bigskip
+\begin{abstract}
+In a recent study, \citet{cooperman2021natural} finds that among mayors
+in northeastern Brazil, the declaration of a drought is associated with
+an increased likelihood of being reelected and that periods of below
+average rainfall are associated with an increased likelihood of
+incumbents running for and winning reelection. In our analysis of the
+paper's findings, we were able to replicate all results. We extended the
+analysis through graphically depicting the relationship between
+term-limits and drought declaration, exploring whether changing the time
+period of analysis impacts the relationship between rainfall and drought
+declaration, and finally through observing the effects of replacing a
+binary variable for rainfall with a continuous scale. While we found
+minor differences in results depending on how variables are interpreted
+and whether binary or continuous variables are used for rainfall,
+nothing we found refutes the paper's findings.
+\end{abstract}
+
+\noindent%
+{\it Keywords:} Disaster, Drought, Reelection
+\vfill
+
+\newpage
+\spacingset{1.45} % DON'T change the spacing!
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+Understanding how politicians respond to upcoming elections can offer
+profound insight into the political decision-making process and
+incentive structure. For one, it shows how politicians interact with
+their constituents in an election year compared to non-election years.
+It also highlights how elected officials think about budgets, government
+funding, and natural disasters, and what might incentivize them to make
+greater investments in public services and resources. Through comparing
+politicians' decisions in election years to non-election years,
+\citet{cooperman2021natural} concurs with the existing body of
+literature
+\citep{alesina1989politics, finan2005reelection, martinez2009theory}
+that politicians respond to reelection incentives and will distribute
+public resources in the hopes of serving longer in office.
+
+It's important to understand the political landscape of Brazil to fully
+interpret the results of the paper. Mayors in Brazil are eligible for
+two consecutive terms of four years each decided through a majority
+vote. It is important to note that the Brazilian party system is very
+fragmented and that social context and family ties often matter more
+than party affiliation. There are many different parties, and some
+mayors even switch parties between elections \citep{novaes2018disloyal}
+--- this creates a political landscape where politicians care less about
+party re-election after serving two terms\footnote{This is different
+  than other country contexts like the U.S., where party lines are often
+  much more solid} meaning that actions taken by term-limited
+politicians likely are not motivated by the desire for a co-partisan to
+be elected \citep{franzese2002electoral, clark1998international}. For
+further context, northeast Brazil is one of the poorest regions in the
+country with significant inequality both in state capacity and poverty
+\citep{tendler1997good, finan2009decentralized, ottonelli2014pobreza}.
+
+Disaster relief is funded by the state government and is either all or
+nothing. To begin the drought related aid process, mayors must declare a
+state of emergency and apply for approval from the governor. This
+requires reporting of information on the extent of the drought, its
+impact on residents, and how the relief money will be spent.
+\citet{cooperman2021natural} did extensive research and field interviews
+to fully understand the complexities of the Brazilian political scheme
+and process for applying for drought funding.
+
+\citet{cooperman2021natural} explores the relationship between municipal
+drought declarations and mayoral reelections in northeast Brazil, the
+country's predominantly agricultural region. Droughts are not uncommon
+in Brazil and often disproportionately affect poor subsistence farmers.
+When an emergency or drought is declared and approved by the national
+government, resources are deployed to the affected communities.
+\citet{cooperman2021natural} argues that these aid resources can be used
+to garner support for incumbent politicians as a form of clientelism or
+distributive politics, incentivizing politicians to declare droughts in
+election years. Using both rainfall and electoral data,
+\citet{cooperman2021natural} finds evidence that mayors in election
+years are more likely to declare droughts, even in times of above
+average rainfall, and that incumbent mayors are more likely to win
+reelection when they declare droughts. Interestingly,
+\citet{cooperman2021natural} also finds that second-term mayors, mayors
+that are term limited and cannot run for reelection, declare droughts at
+higher rates, potentially contradicting the argument that this may be an
+attempt by politicians to buy votes. Importantly,
+\citet{cooperman2021natural} contextualizes this analysis with
+interviews with both Brazilian farmers and political figures, providing
+a more detailed picture of what is happening beyond the data.
+
+\section{Understanding the Impact of Term Limits}
+\label{sec:term_limit}
+
+In our replication of \citet{cooperman2021natural}, we were able to
+successfully reproduce the paper's results and tables\footnote{To
+  observe the original tables and figures, please visit the Appendix}.
+As mentioned earlier, we were interested in looking more closely at
+term-limited politicians and their drought declaring behaviors,
+specifically why term-limited mayors declare droughts more frequently
+than not term-limited mayors. \citet{cooperman2021natural} posits that
+mayors become more experienced over time and that this experience makes
+them better able to go through the relatively lengthy and burdensome
+administrative processes that declaring drought emergencies require.
+
+\begin{figure}[H]
+  \caption{Drought Declaration and Term Limits}
+  \includegraphics{Exhibits/figure1.pdf}
+\end{figure}
+
+To better observe the variation between mayors who are term limited and
+those who are not, we create a graphical representation of Table 2 from
+\citet{cooperman2021natural}. Instead of using the categorical variables
+of ``below average'', ``above average'' and ``very high'' to represent
+rainfall, we use the continuous SPI scale provided in the replication
+data which represents the rainfall between January and June of that year
+as it relates to the average rainfall from 1981-2012 during that
+six-month period.\footnote{SPI ranges from -3 to 3 with numbers between
+  0 and -0.79 indicating an abnormally dry period; numbers between -0.8
+  and -1.29 indicating moderate drought; -1.3 to 1.59 indicating severe
+  drought; -1.6 to -1.99 indicating extreme drought; and less than -2
+  indicating exceptional drought. The same gradations can be viewed in
+  the positive direction but for above average rainfall
+  \citep{de2016drought}.}
+
+Figure 1 shows the relationship between rainfall and drought
+declarations for both term limited and non-term limited mayors. We chose
+to display this relationship using smoothed conditional means due to the
+binary nature of the dependent variable. Figure 1 shows that for
+rainfall amounts that fall beneath 1, meaning they are above average,
+incumbent mayors are significantly more likely to declare droughts than
+their non-term limited counterparts. Observing the graph, there seems to
+be a switch that happens after 1 but given the large confidence
+intervals at that point, this switch is not statistically significant
+and thus nothing should be inferred from it. Although perhaps counter
+intuitive, as mentioned above, \citet{cooperman2021natural} credits this
+relationship to the burdensome paperwork and legislative processes
+associated with asking for drought relief, making experienced
+politicians more likely to take on this burden.
+
+Interestingly, in our replication of Table 2 of the original paper, we
+find a nebulously labeled variable that could interfere with the
+interpretation of results from both our paper and
+\citet{cooperman2021natural}. The variable \citet{cooperman2021natural}
+used to represent second term or term limited politicians is labelled
+``lame duck'' in the provided replication dataset. Being term limited
+and being a lame duck are not the same --- a lame duck is classified as
+an official in the final period of office, after the election of a
+successor and is not necessarily a term limited or second term
+politician \citep{jenkins2008partisanship}. Although it may seem subtle,
+this change in wording could have profound implications on the actual
+meaning of the paper's results; the replication code and data available
+did not include a code book for the dataset, so we are unsure if the
+lame duck variable is indeed about lame ducks or simply term limited
+politicians. If the former is true then the analysis in our paper and
+\citet{cooperman2021natural} needs revising.
+
+To further explore the true definition of the lame duck variable, we
+found the original dataset issued by the Brazilian \emph{Tribunal
+Superior Eleitoral}. Despite finding this, the dataset was in
+Portuguese, so we were unable to competently interpret it. However, we
+were able to find a code book from \citet{hollyer2021parties}, which
+also used data from \emph{Tribunal Superior Eleitoral}, the same
+political source as \citet{cooperman2021natural}. This codebook includes
+a lame duck variable but defines it as indicating incumbency. This
+finding further adds to our confusion about the true meaning of this
+variable. Both lame duck definitions from \citet{cooperman2021natural}
+and \citet{hollyer2021parties} are quite different from the true meaning
+of the term ``lame duck''. Given that \citet{hollyer2021parties} and
+\citet{cooperman2021natural} likely sourced their data from the same
+website, we have reason to believe that there may have been some sort of
+loss in translation or mis-definition causing this confusion. As a
+result, the findings displayed in Table 2 of the original paper may not
+actually represent what \citet{cooperman2021natural} argues they do.
+
+\section{Rainfall Period and Drought Declaration}
+\label{sec:rain_period}
+
+\citet{cooperman2021natural} explores the relationship between rainfall,
+whether it is an election year, and the declaration of droughts amongst
+mayors in municipalities. As we replicated the paper's code, we
+discovered that \citet{cooperman2021natural} used rainfall over the
+six-month period between January and June as the reference for whether
+or not there was a drought and how rainfall compared to the average
+rainfall during that time. \citet{cooperman2021natural} justifies this
+choice explaining that this six-month period is the typical ``rainy
+season'' when farmers typically plant crops, suggesting that a drought
+during this period would be more consequential than during other times.
+\citet{cooperman2021natural} does briefly engage with the other two
+measures of rainfall --- the three month measure from April to June and
+the nine month measure from January to September --- in her
+supplementary materials but only insofar as to observe the relationship
+between rainfall during these times and whether a drought is declared.
+The paper does not observe the implications of having below average
+rainfall in these periods on drought declaration like was done in Table
+1 of \citet{cooperman2021natural} using the six-month period data.
+
+Additionally, because elections are held in October and voters may be
+subject to recency bias, we became particularly interested in how
+rainfall in the three months leading up to the election (July -
+September) fits into this relationship. Because there was no specific
+indicator for these three months provided in the dataset, we
+extrapolated lower than average rainfall in July - September through
+finding instances in which the nine month rainfall was below average but
+the six month rainfall was not. Ideal data would allow for us to explore
+this as a gross variable, but the data regarding rainfall in
+\citet{cooperman2021natural} only shows rainfall relative to the average
+for periods of time outside of the January-June period. As a result, we
+were not able to find the exact amount of rain from July to September.
+Despite this, our binary variable indicates whether rainfall was
+significantly below average in the period leading up to the election.
+While politicians cannot control the weather, hardship due to
+below-average rainfall in the months immediately before the October
+election could potentially impact outcomes.
+
+\begin{table}[]
+  \caption{Rainfall and Incumbent Outcomes}
+  \input{Exhibits/tab1.tex}
+\end{table}
+
+To explore the relationship between rainfall and drought declarations,
+as was done in Table 1 from the original paper, we repeat the analysis
+for Model 1 but replace the six-month rainfall statistics with the
+three-month (Model 2), nine-month (Model 3), and last three months
+leading up to the election (Model 4). Our results are in line with the
+findings from the six-month period: below average rainfall over the
+periods from January-September and April-June are similarly positively
+correlated with drought declarations. Interestingly, below-average
+rainfall in the period immediately before the election (July-September)
+is not significantly correlated with an increase in drought
+declarations. This may be because this variable is binary and the sample
+size is much smaller than for the other measures. It also could
+potentially indicate that below-average rainfall in those three months
+is not consequential for constituents or that because of the lag between
+when a drought is declared and when aid is distributed, politicians do
+not declare droughts during this time because they do not stand to
+benefit politically from doing so. Thirdly, it could be the case that
+politicians don't feel the need to declare a drought during this time
+because it is no longer peak farming season, so the consequences of a
+drought on farmers will be less severe. To draw any conclusions about
+these potential explanations, more research and data are needed. Our
+findings suggest that \citet{cooperman2021natural} chose an appropriate
+time period to analyze droughts. Even without including the qualitative
+data that explains the importance of the rainy period, it seems that
+having below average rainfall between January and June better explains
+the variation in the data than the other measures as it has the highest
+R-squared value.
+
+\section{ Rainfall Period and Reelection}
+\label{sec:reelection}
+
+\begin{table}[]
+  \caption{Rainfall Amount and Drought Declaration}
+  \input{Exhibits/tab2.tex}
+\end{table}
+
+The above table and analysis suggest that the time of year in which
+rainfall is observed as being ``below average'' does not significantly
+affect whether a drought is declared. Because of this, we are interested
+in directly observing the relationship between rainfall amount and both
+whether an incumbent runs again, and if so, whether they win. The
+analysis displayed in Table 3 of \citet{cooperman2021natural} focuses on
+the binary variable ``below average rainfall'' and its effect on whether
+an incumbent runs again and wins. While the dataset used includes a
+continuous variable for rainfall relative to the average, the analysis
+in the paper does not. We extend the analysis of
+\citet{cooperman2021natural} by observing rainfall relative to other
+years as a continuous variable to see whether the relationship seen
+between an incumbent having ``below-average rainfall'' and running and
+winning also holds when we observe rainfall as a continuous variable,
+and specifically, whether politicians are rewarded for weather-related
+prosperity that happens within their terms.
+
+Interpreting Table 2, we do not find significant differences between
+relative rainfall and whether or not an incumbent runs, nor between
+rainfall and whether an incumbent wins. This could be for a number of
+reasons including ``below average rainfall'' affecting communities more
+than ``above average rainfall'' or perhaps that the categorical ``below
+average rainfall'' variable matters but not rainfall variation more
+generally.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Through our exploration of differential measures of rainfall, we
+conclude that \citet{cooperman2021natural} both made the optimal and
+logical choice in choosing the six-month rainy period as the main period
+of rainfall observation. The results do not differ significantly from
+the three and nine month periods. Additionally, we find that measuring
+rainfall using a continuous variable rather than a binary ``below
+average'' variable eliminates the significant effects of rainfall on
+incumbents running for and winning reelection. This contradicts the
+findings of \citet{cooperman2021natural} but does not necessarily
+undermine the results and could potentially be dismissed because of
+droughts being more relevant than periods of increased rainfall.
+
+Despite our confusion about the nebulous nature of the ``lame duck''
+variable and the possibility that this interfered with both our analysis
+and the analysis of \citet{cooperman2021natural}, we believe that
+regardless of whether the variable indicates a true lame duck or simply
+a term-limited politician, that there are interesting conclusions to be
+drawn about the behaviors of politicians who do not experience a
+reelection incentive.
+
+Replication papers like this one are crucial for ensuring the validity
+and the significance of academic findings. Sometimes, even if results
+are replicable, additional robustness checks, changes in modeling, or
+unique approaches can change the significance of results, or even the
+results themselves. With political science topics having great
+significance for policy making around the world, it is essential that we
+get these questions right or at least right as we possibly could.
+Replication and peer review strengthen the academic literature and the
+legitimacy of political science as a field. Even when, like in this
+paper, there are minimal faults found with the original piece,
+replication serves as an important step for ensuring validity of
+results.
+
+\newpage
+
+\bibliographystyle{agsm}
+\bibliography{references.bib}
+
+\end{document}

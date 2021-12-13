@@ -1,0 +1,165 @@
+---
+title: "Appendix"
+author: "Scott Mahon and Alexandra Norris"
+date: "12/12/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE)
+library(lfe) # Version 2.8.5
+library(tinytex)
+library(stargazer) # Version 5.2.2
+library(tidyverse)
+
+```
+
+Note: This Appendix includes all tables and figures from the original paper, Cooperman (2021). Exhibits are labelled as they appear in the original paper. Tables are made using the exact code from Cooperman (2021). Figures use the same data but are presented slightly differently.
+
+```{r}
+load("cooperman_2021_data.Rdata") 
+source("cooperman_2021_functions.R") 
+```
+
+\newpage
+
+## Figure 2
+```{r warning=FALSE, message=FALSE}
+
+# create a function to make it so there is an "all" category
+# function sourced from : https://stackoverflow.com/questions/18933575/easily-add-an-all-facet-to-facet-wrap-in-ggplot2
+
+CreateAllFacet <- function(x, col){
+  x$facet <- x[[col]]
+  temp <- x
+  temp$facet <- "All States (1031)"
+  merged <-rbind(temp, x)
+
+  # ensure the facet value is a factor
+  merged[[col]] <- as.factor(merged[[col]])
+
+  return(merged)
+}
+
+df2 <- df %>%
+  mutate(state_name = ifelse(state=="AL", "Alagoas (35)", ifelse(state=="BA", "Bahia (257)", ifelse(state=="CE", "Cearà (134)", ifelse(state=="MG", "Minas Gerais (40)", ifelse(state=="PB", "Paraíba (170)", ifelse(state=="PE", "Pernambuco (118)", ifelse(state=="PI", "Piauí (109)", ifelse(state=="RN", "Rio Grande do Norte (140)", "Sergipe(28)"))))))))) 
+
+df2 <- CreateAllFacet(df2, "state_name")
+
+
+df2 %>%
+  ggplot(aes(x = SPI_6_June, y = drought_bin)) +
+  # geom_jitter() +
+  geom_smooth() +
+  theme_classic() +
+  geom_vline(xintercept = 0, color = "red") +
+  facet_wrap(~facet, ncol = 2) +
+  labs(x = "SPI (Jan-June)", y = "Prob. Drought Dec.")
+
+```
+\newpage
+
+## Figure 3
+```{r warning=FALSE, message=FALSE}
+
+df %>%
+  mutate(drought_mayor = as.factor(drought_mayor)) %>%
+  filter(lameduck != 1) %>%
+  ggplot(aes(x = SPI_6_June, y = incwin)) +
+  geom_smooth(aes(group = drought_mayor, color = drought_mayor)) +
+  geom_vline(xintercept = 0, color = "red") +
+  theme_classic() +
+  labs(x = "SPI (Jan-June)", y = "Incumbent Wins", color = "", title = "Re-Election Rates and Drought Declaration") +
+  scale_color_discrete(labels = c("No Declaration", "Declaration"))
+
+```
+
+\newpage
+
+## Table 1
+
+```{r results='asis'}
+
+elec.noint <- felm(drought_bin ~ belowave6mo_June + mayorelecyear  + govelecyear + time + time.sq  + PT  + PET_JantoJune +  lncattle + corn_share + bean_share |ibgecode|0|state.year, data=df)
+elec.may <- felm(drought_bin ~ belowave6mo_June*mayorelecyear + time  + time.sq+ PT + PET_JantoJune +  lncattle + corn_share + bean_share  |ibgecode|0|state.year, data=df)
+elec.maygov <- felm(drought_bin ~ belowave6mo_June*mayorelecyear  + govelecyear*belowave6mo_June + time + time.sq + PT  + PET_JantoJune +  lncattle + corn_share + bean_share |ibgecode|0|state.year, data=df)
+
+mayorgov_int_labels <- c("Below Average Rainfall", "Mayor Election Year",  "State/Fed Election Year", "Mayor Election * Below Ave. Rainfall", "State/Fed Election * Below Ave. Rainfall")
+cat(stargazer(elec.noint,elec.may, elec.maygov, omit=c("time", "PT", "PET_JantoJun", "lncattle", "corn_share", "bean_share"),  dep.var.labels="Drought Emergency Declared",
+              covariate.labels=mayorgov_int_labels,float=FALSE,omit.stat=c("ll", "f"), header = FALSE)
+    , file="tab1.tex", sep="\n")
+
+
+```
+
+\newpage
+
+## Table 2
+
+```{r, results='asis'}
+
+# Table 2: Mayoral Term and Drought Declaration ---------------------------
+
+lameduck.below0 <- felm(drought_bin ~ lameduck + mayorelecyear + time + time.sq + PT  + PET_JantoJune +  lncattle + corn_share + bean_share |ibgecode |0|state.year, data=df, subset =SPI_6_June<0)
+lameduck.below0.int <- felm(drought_bin ~ lameduck*mayorelecyear + time + time.sq + PT  + PET_JantoJune +  lncattle + corn_share + bean_share |ibgecode |0|state.year, data=df, subset =SPI_6_June<0)
+lameduck.above0 <- felm(drought_bin ~ lameduck + mayorelecyear + time + time.sq + PT  + PET_JantoJune +  lncattle + corn_share + bean_share |ibgecode|0|state.year, data=df, subset =SPI_6_June>0)
+lameduck.above0.int <- felm(drought_bin ~ lameduck*mayorelecyear + time + time.sq + PT  + PET_JantoJune +  lncattle + corn_share + bean_share |ibgecode|0|state.year, data=df, subset =SPI_6_June>0)
+lameduck.above1 <- felm(drought_bin ~ lameduck + mayorelecyear + time + time.sq + PT  + PET_JantoJune +  lncattle + corn_share + bean_share |ibgecode|0|state.year, data=df, subset =SPI_6_June>1)
+lameduck.above1.int <- felm(drought_bin ~ lameduck*mayorelecyear + time + time.sq + PT  + PET_JantoJune +  lncattle + corn_share + bean_share |ibgecode|0|state.year, data=df, subset =SPI_6_June>1)
+
+stargazer(lameduck.below0,lameduck.below0.int, lameduck.above0, lameduck.above0.int, lameduck.above1,lameduck.above1.int,
+              omit=c("PT", "PET_JantoJune", "lncattle", "corn_share", "bean_share", "time"),
+              float=FALSE, dep.var.labels="Drought Emergency Declared",
+              covariate.labels = c("2nd Term Mayor", "Mayor Election Year", "Mayor Election * 2nd Term Mayor"), 
+              column.labels = c("Below Ave.", "Below Ave.", "Above Ave.","Above Ave.", "Very High", "Very High"), df = F, header = FALSE)
+
+```
+
+\newpage
+
+## Table 3
+
+```{r, results='asis'}
+
+# Table 3: Incumbent Mayor Candidacy and Re-Election ----------------------
+
+incrun0 <- felm(incrun~ belowave6mo_June + PET_JantoJune + mayor_win_vshare_prev + copartisan_pres + copartisan_gov + lncattle + corn_share + bean_share |state + year|0|state.year, data=df, subset=lameduck==0)
+incrun1 <- felm(incrun~ drought_mayor + mayor_win_vshare_prev   + copartisan_pres + copartisan_gov   + lncattle + corn_share + bean_share |state + year|0|state.year, data=df, subset=lameduck==0)
+incrun3 <- felm(incrun~ drought_mayor_2years + mayor_win_vshare_prev + copartisan_pres + copartisan_gov    + lncattle + corn_share + bean_share |state + year|0|state.year, data=df, subset=lameduck==0)
+incwin0 <- felm(incwin~ belowave6mo_June + PET_JantoJune + mayor_win_vshare_prev  + copartisan_pres + copartisan_gov   + lncattle + corn_share + bean_share |state + year|0|state.year, data=df, subset=lameduck==0)
+incwin1 <- felm(incwin~ drought_mayor + mayor_win_vshare_prev + copartisan_pres + copartisan_gov   + lncattle + corn_share + bean_share |state + year|0|state.year, data=df, subset=lameduck==0)
+incwin3 <- felm(incwin~ drought_mayor_2years + mayor_win_vshare_prev + copartisan_pres + copartisan_gov   + lncattle + corn_share + bean_share |state + year|0|state.year, data=df, subset=lameduck==0)
+incrunwinlabels <- c("Below Average Rainfall", "Drought Declaration in Mayor Election Year","Drought Declaration in Last Two Years", "Mayor's Vote Share in Previous Election", "Copartisan President", "Copartisan Governor")
+stargazer(incrun0, incrun1,incrun3,
+              incwin0, incwin1,incwin3,
+              omit=c("PET_JantoJune", "lncattle", "corn_share", "bean_share"),covariate.labels=incrunwinlabels,
+              float=FALSE, dep.var.labels=c("Incumbent Runs","Incumbent Wins"),df = F, header = FALSE)
+
+```
+
+\newpage
+
+## Table 4
+
+```{r, results='asis'}
+
+# Table 4: Partisan Cycles and Drought Declaration ------------------------------------------------------
+
+pt.clusterstate <-       felm(drought_bin ~ mayorelecyear*PT + SPI_6_June + PET_JantoJune + time + time.sq + lncattle + corn_share + bean_share |ibgecode|0|state.year, data=df, subset=PT_variation==1)
+copartpres.clusterstate <- felm(drought_bin ~ mayorelecyear*copartisan_pres + SPI_6_June + PET_JantoJune + time + time.sq +lncattle + corn_share + bean_share  |ibgecode|0|state.year, data=df, subset= copartisan_pres_variation==1)
+copartgov.clusterstate <- felm(drought_bin ~ mayorelecyear*copartisan_gov + SPI_6_June + PET_JantoJune + time + time.sq +lncattle + corn_share + bean_share   |ibgecode|0|state.year, data=df, subset=copartisan_gov_variation==1)
+prescoal.clusterstate <- felm(drought_bin ~ mayorelecyear*pres_coalition_mayor + SPI_6_June + PET_JantoJune + time + time.sq +lncattle + corn_share + bean_share |ibgecode|0|state.year, data=df, subset= pres_coalition_mayor_variation==1)
+alignmentlabels <- c("Mayor Election Year","PT", "Copartisan Mayor President", "Copartisan Mayor Governor", "Copartisan Mayor President Coalition", "Mayor Elec. * PT", "Mayor Elec. * Co. Mayor Pres.", "Mayor Elect. * Co. Mayor Gov.","Mayor Elec. * Co. Mayor Pres. Coal.")
+df2 <- subset(df,!is.na(lncattle))
+df2 <- subset(df2,!is.na(corn_share))
+df2 <- subset(df2,!is.na(bean_share))
+
+stargazer(pt.clusterstate,copartpres.clusterstate,copartgov.clusterstate,prescoal.clusterstate
+              ,omit=c("SPI", "PET_JantoJune", "lncattle", "corn_share", "bean_share", "time")
+              ,add.lines=list(c("Number of Municipalities", length(unique(df2$ibgecode[df2$PT_variation==1])),  length(unique(df2$ibgecode[df2$copartisan_pres_variation==1])), length(unique(df2$ibgecode[df2$copartisan_gov_variation==1])), length(unique(df2$ibgecode[df2$pres_coalition_mayor_variation==1]))))
+              , dep.var.labels="Drought Emergency Declared",float=FALSE, covariate.labels=alignmentlabels
+              , omit.stat=c("ll", "f", "ser"), no.space=F, header = FALSE)
+
+```
+
